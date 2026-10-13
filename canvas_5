@@ -1,0 +1,139 @@
+import tkinter as tk
+import random
+
+# Create window
+root = tk.Tk()
+root.title("Group 3 - Underwater Aquarium")
+root.geometry("900x600")
+root.resizable(False, False)
+
+# Create canvas
+canvas = tk.Canvas(root, width=900, height=600,
+                   bg="#087EAC", highlightthickness=0)
+canvas.pack()
+
+# Ocean floor
+canvas.create_rectangle(0, 520, 900, 600,
+                        fill="#E8C68B", outline="")
+
+# Seaweed
+for x in range(40, 900, 100):
+    for offset in [-12, 0, 12]:
+        canvas.create_line(
+            x, 530, x + offset, 450,
+            fill="#168B49", width=7, smooth=True
+        )
+
+# Rocks
+for x in [90, 270, 480, 710, 830]:
+    canvas.create_oval(x, 505, x + 65, 540,
+                       fill="#778899", outline="")
+
+# Function to draw a fish
+def create_fish(x, y, color, speed):
+    tag = f"fish_{x}_{y}"
+
+    # Body
+    canvas.create_oval(x, y, x + 90, y + 45,
+                       fill=color, outline="white",
+                       width=2, tags=tag)
+
+    # Tail
+    canvas.create_polygon(
+        x, y + 22,
+        x - 35, y,
+        x - 35, y + 45,
+        fill=color, outline="white", tags=tag
+    )
+
+    # Eye
+    canvas.create_oval(
+        x + 65, y + 10, x + 75, y + 20,
+        fill="white", tags=tag
+    )
+    canvas.create_oval(
+        x + 69, y + 13, x + 74, y + 18,
+        fill="black", tags=tag
+    )
+
+    # Fin
+    canvas.create_polygon(
+        x + 30, y + 5,
+        x + 45, y - 18,
+        x + 60, y + 5,
+        fill=color, outline="white", tags=tag
+    )
+
+    return {"tag": tag, "speed": speed}
+
+
+# Multiple fish with different speeds
+fish_list = [
+    create_fish(100, 100, "#FF9933", 2),
+    create_fish(350, 220, "#FF66B2", 4),
+    create_fish(50, 350, "#FFD700", 3),
+    create_fish(550, 150, "#66FFCC", 1),
+    create_fish(650, 390, "#B388FF", 5)
+]
+
+# Create bubbles
+bubbles = []
+
+for i in range(25):
+    x = random.randint(20, 880)
+    y = random.randint(30, 510)
+    size = random.randint(6, 16)
+
+    bubble = canvas.create_oval(
+        x, y, x + size, y + size,
+        outline="#D8F8FF", width=2
+    )
+
+    bubbles.append({
+        "id": bubble,
+        "speed": random.randint(1, 4)
+    })
+
+
+# Repeated animation
+def animate():
+
+    # Move fish horizontally
+    for fish in fish_list:
+        canvas.move(fish["tag"], fish["speed"], 0)
+
+        coords = canvas.bbox(fish["tag"])
+
+        # Restart fish from left
+        if coords and coords[0] > 900:
+            canvas.move(
+                fish["tag"],
+                -coords[2] - 40,
+                0
+            )
+
+    # Move bubbles upward
+    for bubble in bubbles:
+        canvas.move(
+            bubble["id"], 0, -bubble["speed"]
+        )
+
+        coords = canvas.coords(bubble["id"])
+
+        # Restart bubble at bottom
+        if coords[3] < 0:
+            x = random.randint(20, 880)
+            canvas.move(
+                bubble["id"],
+                x - coords[0],
+                540 - coords[1]
+            )
+
+    # Repeat every 30 milliseconds
+    root.after(30, animate)
+
+
+# Start animation
+animate()
+
+root.mainloop()

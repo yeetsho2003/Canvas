@@ -1,15 +1,3 @@
-'''import tkinter as tk
-root = tk.Tk()
-root.title("My First Canvas")
-canvas = tk.Canvas(root, width=550, height=360, bg="white")
-canvas.pack()
-canvas.create_rectangle(40, 40, 220, 150, fill="coral")
-canvas.create_oval(280, 50, 440, 190, fill="lightblue")
-canvas.create_line(50, 250, 500, 250, width=4)
-canvas.create_text(275, 310, text="Hello Canvas", font=
-("Arial", 20))
-root.mainloop()'''
-
 import tkinter as tk
 
 # Create the main window
@@ -158,6 +146,90 @@ canvas.create_text(
     text="My House",
     font=("Arial", 24, "bold"),
     fill="white"
+)
+
+# -------------------------
+# SMALL PET HOUSES
+# -------------------------
+
+# Pet house 1 - left
+canvas.create_rectangle(
+    70, 450, 140, 500,
+    fill="lightblue",
+    outline="black",
+    width=2
+)
+
+canvas.create_polygon(
+    65, 450,
+    105, 415,
+    145, 450,
+    fill="darkblue",
+    outline="black",
+    width=2
+)
+
+# Door
+canvas.create_arc(
+    90, 465, 120, 495,
+    start=0,
+    extent=180,
+    fill="brown",
+    outline="black"
+)
+
+
+# Pet house 2 - middle left
+canvas.create_rectangle(
+    160, 450, 230, 500,
+    fill="lightpink",
+    outline="black",
+    width=2
+)
+
+canvas.create_polygon(
+    155, 450,
+    195, 415,
+    235, 450,
+    fill="purple",
+    outline="black",
+    width=2
+)
+
+# Door
+canvas.create_arc(
+    180, 465, 210, 495,
+    start=0,
+    extent=180,
+    fill="brown",
+    outline="black"
+)
+
+
+# Pet house 3 - right
+canvas.create_rectangle(
+    670, 450, 740, 500,
+    fill="lightgreen",
+    outline="black",
+    width=2
+)
+
+canvas.create_polygon(
+    665, 450,
+    705, 415,
+    745, 450,
+    fill="darkgreen",
+    outline="black",
+    width=2
+)
+
+# Door
+canvas.create_arc(
+    690, 465, 720, 495,
+    start=0,
+    extent=180,
+    fill="brown",
+    outline="black"
 )
 
 # Run the program

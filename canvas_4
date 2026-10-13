@@ -1,0 +1,303 @@
+
+import tkinter as tk
+import random
+import math
+
+# ---------------- WINDOW ----------------
+WIDTH = 900
+HEIGHT = 600
+
+root = tk.Tk()
+root.title("Underwater Aquarium | Group 3")
+root.geometry(f"{WIDTH}x{HEIGHT}")
+root.resizable(False, False)
+
+canvas = tk.Canvas(
+    root,
+    width=WIDTH,
+    height=HEIGHT,
+    bg="#063B68",
+    highlightthickness=0
+)
+canvas.pack()
+
+# ---------------- OCEAN BACKGROUND ----------------
+# Layered blue ocean
+ocean_colors = [
+    "#062B52", "#073B68", "#07517A",
+    "#08658A", "#087B94", "#098B99"
+]
+
+for i, color in enumerate(ocean_colors):
+    y1 = i * HEIGHT // len(ocean_colors)
+    y2 = (i + 1) * HEIGHT // len(ocean_colors)
+    canvas.create_rectangle(
+        0, y1, WIDTH, y2,
+        fill=color, outline=""
+    )
+
+# Sunlight rays
+for x in [100, 270, 470, 680, 850]:
+    canvas.create_polygon(
+        x, 0, x + 35, 0, x + 150, 320, x + 110, 320,
+        fill="#1B7291", outline=""
+    )
+
+# Decorative water bubbles in the background
+for _ in range(45):
+    x = random.randint(10, WIDTH - 10)
+    y = random.randint(20, HEIGHT - 100)
+    r = random.randint(1, 3)
+    canvas.create_oval(
+        x-r, y-r, x+r, y+r,
+        outline="#68D8E8"
+    )
+
+# ---------------- SEA FLOOR ----------------
+canvas.create_rectangle(
+    0, 525, WIDTH, HEIGHT,
+    fill="#D5AC65", outline=""
+)
+
+# Sand texture
+for _ in range(100):
+    x = random.randint(0, WIDTH)
+    y = random.randint(530, HEIGHT - 5)
+    r = random.randint(1, 3)
+    canvas.create_oval(
+        x-r, y-r, x+r, y+r,
+        fill="#F4D69B", outline=""
+    )
+
+# ---------------- CORAL ----------------
+def draw_coral(x, y, color, scale=1):
+    # Branches made from lines
+    branches = [
+        (0, 0, -15, -35),
+        (0, -15, -25, -28),
+        (0, -25, 8, -50),
+        (0, -10, 22, -32),
+        (8, -50, 20, -60)
+    ]
+
+    for x1, y1, x2, y2 in branches:
+        canvas.create_line(
+            x + x1*scale, y + y1*scale,
+            x + x2*scale, y + y2*scale,
+            fill=color,
+            width=int(7*scale),
+            capstyle=tk.ROUND
+        )
+
+draw_coral(105, 540, "#FF718A", 1.1)
+draw_coral(760, 545, "#FF9D70", 1.0)
+draw_coral(820, 542, "#D58AFF", 0.75)
+
+# ---------------- SEAWEED ----------------
+def draw_seaweed(x, height, color):
+    points = []
+    for i in range(9):
+        y = 535 - i * height / 8
+        sway = math.sin(i * 0.8) * 12
+        points.extend([x + sway, y])
+
+    canvas.create_line(
+        *points,
+        fill=color,
+        width=9,
+        smooth=True,
+        capstyle=tk.ROUND
+    )
+
+draw_seaweed(200, 145, "#27C18A")
+draw_seaweed(225, 105, "#49D17D")
+draw_seaweed(680, 125, "#27C18A")
+draw_seaweed(710, 165, "#49D17D")
+
+# ---------------- FISH ----------------
+def draw_fish(x, y, size, color, speed):
+    items = []
+
+    # Tail: polygon
+    tail = canvas.create_polygon(
+        x, y,
+        x - size*0.55, y - size*0.38,
+        x - size*0.55, y + size*0.38,
+        fill=color, outline="#D9FFFF", width=1
+    )
+    items.append(tail)
+
+    # Body: oval
+    body = canvas.create_oval(
+        x - size*0.45, y - size*0.28,
+        x + size*0.65, y + size*0.28,
+        fill=color, outline="#D9FFFF", width=1
+    )
+    items.append(body)
+
+    # Top fin: polygon
+    fin = canvas.create_polygon(
+        x - size*0.1, y - size*0.22,
+        x + size*0.1, y - size*0.52,
+        x + size*0.35, y - size*0.22,
+        fill=color, outline=""
+    )
+    items.append(fin)
+
+    # Eye
+    eye = canvas.create_oval(
+        x + size*0.40, y - size*0.10,
+        x + size*0.53, y + size*0.03,
+        fill="white", outline=""
+    )
+    items.append(eye)
+
+    pupil = canvas.create_oval(
+        x + size*0.45, y - size*0.075,
+        x + size*0.51, y - size*0.015,
+        fill="#10243A", outline=""
+    )
+    items.append(pupil)
+
+    # Decorative stripe
+    stripe = canvas.create_line(
+        x + size*0.05, y - size*0.22,
+        x + size*0.05, y + size*0.22,
+        fill="#FFF4C7", width=3
+    )
+    items.append(stripe)
+
+    return {
+        "items": items,
+        "x": x,
+        "y": y,
+        "size": size,
+        "speed": speed
+    }
+
+
+fish_data = [
+    (100, 140, 65, "#FFB52E", 2.5),
+    (390, 220, 48, "#FF718A", 1.5),
+    (650, 120, 75, "#54E0D0", 3.2),
+    (270, 340, 58, "#C69CFF", 2.0),
+    (720, 350, 45, "#FF884D", 1.2),
+    (480, 420, 38, "#FFE066", 2.8)
+]
+
+fishes = [
+    draw_fish(x, y, size, color, speed)
+    for x, y, size, color, speed in fish_data
+]
+
+# ---------------- RISING BUBBLES ----------------
+bubbles = []
+
+for _ in range(20):
+    x = random.randint(20, WIDTH - 20)
+    y = random.randint(100, HEIGHT - 50)
+    r = random.randint(4, 10)
+
+    bubble = canvas.create_oval(
+        x-r, y-r, x+r, y+r,
+        outline="#9CF4FF",
+        width=2
+    )
+
+    shine = canvas.create_oval(
+        x-r*0.5, y-r*0.6,
+        x-r*0.1, y-r*0.2,
+        fill="#C5FAFF", outline=""
+    )
+
+    bubbles.append({
+        "items": [bubble, shine],
+        "x": x,
+        "y": y,
+        "r": r,
+        "speed": random.uniform(1, 3)
+    })
+
+# ---------------- TITLE ----------------
+canvas.create_text(
+    WIDTH // 2, 35,
+    text="OCEAN WORLD",
+    font=("Arial", 23, "bold"),
+    fill="#FFFFFF"
+)
+
+canvas.create_text(
+    WIDTH // 2, 65,
+    text="An underwater adventure",
+    font=("Arial", 11, "italic"),
+    fill="#B9F4FF"
+)
+
+# ---------------- ANIMATION ----------------
+def animate():
+    # Move every fish at its own speed
+    for fish in fishes:
+        dx = fish["speed"]
+        canvas.move(fish["items"][0], dx, 0)
+
+        # Move all remaining fish parts together
+        for item in fish["items"][1:]:
+            canvas.move(item, dx, 0)
+
+        fish["x"] += dx
+
+        # Restart the fish when it leaves the screen
+        if fish["x"] > WIDTH + fish["size"]:
+            reset_x = -fish["size"]
+            shift = reset_x - fish["x"]
+
+            for item in fish["items"]:
+                canvas.move(item, shift, 0)
+
+            fish["x"] = reset_x
+
+    # Move bubbles upwards
+    for bubble in bubbles:
+        dy = -bubble["speed"]
+
+        for item in bubble["items"]:
+            canvas.move(item, 0, dy)
+
+        bubble["y"] += dy
+
+        # Restart the bubble at the bottom
+        if bubble["y"] < 80:
+            reset_y = HEIGHT - 15
+            shift = reset_y - bubble["y"]
+
+            for item in bubble["items"]:
+                canvas.move(item, 0, shift)
+
+            bubble["y"] = reset_y
+            bubble["x"] = random.randint(20, WIDTH - 20)
+
+            # Keep the bubble and its shine together
+            for item in bubble["items"]:
+                canvas.move(item, bubble["x"] - (
+                    canvas.coords(item)[0] +
+                    canvas.coords(item)[2]
+                ) / 2, 0) if item == bubble["items"][0] else None
+
+            # Correct shine position relative to the bubble
+            r = bubble["r"]
+            canvas.coords(
+                bubble["items"][0],
+                bubble["x"]-r, reset_y-r,
+                bubble["x"]+r, reset_y+r
+            )
+            canvas.coords(
+                bubble["items"][1],
+                bubble["x"]-r*0.5, reset_y-r*0.6,
+                bubble["x"]-r*0.1, reset_y-r*0.2
+            )
+
+    root.after(30, animate)
+
+
+animate()
+root.mainloop()
